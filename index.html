@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Kernel0 by wangfakang</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Kernel0</h1>
+        <p class="header">kernel namespace cgroup simple study</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/wangfakang/kernel0/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/wangfakang/kernel0/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/wangfakang/kernel0">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/wangfakang">wangfakang</a></p>
+
+
+      </header>
+      <section>
+        <p><code>linux的名字空间与资源隔离:</code> </p>
+
+<h1>
+<a id="namespace的基本概念-----" class="anchor" href="#namespace%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5-----" aria-hidden="true"><span class="octicon octicon-link"></span></a>NameSpace的基本概念：     </h1>
+
+<ul>
+<li>Linux Namespaces机制提供一种资源隔离方案。PID,IPC,Network等系统资源不再是全局性的，而是属于特定的Namespace。
+每个Namespace里面的资源对其他Namespace都是透明的。比如不同的namespace可以有相同的进程的pid但是是不同的进程，而且
+只对当前的namespace是可见的．<br>
+</li>
+<li>要创建新的Namespace，只需要在调用clone时指定相应的flag。Linux Namespaces机制为实现基于容器的虚拟化技术提供了
+很好的基础，LXC（Linux containers）就是利用这一特性实现了资源的隔离。不同container内的进程属于不同的Namespace，彼
+此透明，互不干扰。下面我们就从clone系统调用的flag出发，来介绍各个Namespace.<br>
+</li>
+</ul>
+
+<div class="highlight highlight-source-c"><pre><span class="pl-k">int</span> <span class="pl-en">clone</span>(<span class="pl-k">int</span> (*fn)(<span class="pl-k">void</span> *), void *child_stack, int flags, void *arg)
+CLONE_FS          子进程与父进程共享相同的文件系统，包括root、当前目录、umask
+
+CLONE_NEWNS     当clone需要自己的命名空间时设置这个标志，不能同时设置CLONE_NEWS和CLONE_FS。 </pre></div>
+
+<ul>
+<li> UTS namespace提供了主机名和域名的隔离，这样每个容器就可以拥有了独立的主机名和域名，在网络上可以被视作一个独立的
+节点而非宿主机上的一个进程．<br>
+</li>
+<li>Mount namespace通过隔离文件系统挂载点对隔离文件系统提供支持，它是历史上第一个Linux namespace，所以它的标识位比较
+特殊，就是CLONE_NEWNS．<br>
+</li>
+</ul>
+
+<h1>
+<a id="cgroup的基本概念" class="anchor" href="#cgroup%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cgroup的基本概念：</h1>
+
+<ul>
+<li>
+<p>Cgroups是control groups的缩写，是Linux内核提供的一种可以限制、记录、隔离进程组（process groups）所使用的物理资源
+（如：cpu,memory,IO等等）的机制。最初由google的工程师提出，后来被整合进Linux内核。Cgroups也是LXC为实现虚拟化所使用的
+资源管理手段，可以说没有cgroups就没有LXC.      </p>
+
+<ul>
+<li>说白了namespace就是解决相应的名字空间的问题，而cgroup解决了相应的资源限制的问题．LXC 是基于 cgroup 的 namespace
+［具有资源限制的的名字空间］．<br>
+</li>
+</ul>
+</li>
+</ul>
+
+<h1>
+<a id="欢迎一起交流学习-" class="anchor" href="#%E6%AC%A2%E8%BF%8E%E4%B8%80%E8%B5%B7%E4%BA%A4%E6%B5%81%E5%AD%A6%E4%B9%A0-" aria-hidden="true"><span class="octicon octicon-link"></span></a>欢迎一起交流学习 </h1>
+
+<p>在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流</p>
+
+<ul>
+<li>邮件(1031379296#qq.com, 把#换成@)</li>
+<li>QQ: 1031379296</li>
+<li>weibo: <a href="http://weibo.com/u/2786211992/home">@王发康</a>
+</li>
+</ul>
+
+<h1>
+<a id="thx" class="anchor" href="#thx" aria-hidden="true"><span class="octicon octicon-link"></span></a>Thx</h1>
+
+<ul>
+<li>chunshengsterATgmail.com</li>
+</ul>
+
+<h1>
+<a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>Author</h1>
+
+<ul>
+<li>Linux\nginx\golang\c\c++爱好者</li>
+<li>欢迎一起交流  一起学习# </li>
+<li>Others say good and Others good</li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("kernel namespace cgroup simple study");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
